@@ -1,0 +1,2 @@
+#define ov2math_VERSION_MAJOR @ov2math_VERSION_MAJOR@
+#define ov2math_VERSION_MINOR @ov2math_VERSION_MINOR@
