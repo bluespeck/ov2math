@@ -1,56 +1,82 @@
 #include <memory>
+#include <concepts>
+#include <ov2concepts.h>
 
 namespace ov2::math
 {
-    template <typename T>
+    template <number T>
     class vector2 final
     {
     public:
+        T x, y;
+
+    public:
         using element_type = T;
+        using value_type = vector2<element_type>;
+    
     public:
-        element_type x, y;
+        constexpr vector2(const element_type x, const element_type y) noexcept : x{ x }, y{ y } {}
 
-    public:
-        constexpr vector2(element_type x, element_type y) noexcept;
+        constexpr value_type& operator= (const value_type& other) noexcept = default;
+        
+        constexpr value_type operator+=(const value_type& other) noexcept;
+        constexpr value_type operator-=(const value_type& other) noexcept;
 
-        constexpr vector2<element_type>& operator= (const vector2<element_type>& other) noexcept;
+        constexpr bool operator==(const value_type& other) const noexcept;
+        constexpr bool operator!=(const value_type& other) const noexcept;
 
-        constexpr bool operator==(const vector2<element_type>& other) const noexcept;
-        constexpr bool operator!=(const vector2<element_type>& other) const noexcept;
+        constexpr value_type operator+(const value_type& other) const noexcept;
+        constexpr value_type operator-(const value_type& other) const noexcept;
+
+        template<number U>
+        friend constexpr value_type operator*(const value_type& v, const U scalar) noexcept
+        {
+            return { v.x * scalar, v.y * scalar };
+        }
+        template<number U>
+        friend constexpr value_type operator*(const U scalar, const value_type& v) noexcept
+        {
+            return { v.x * scalar, v.y * scalar };
+        }
+
+        template<number U>
+        friend constexpr value_type operator/(const value_type& v, const U scalar) noexcept
+        {
+            return { v.x / scalar, v.y / scalar };
+        }
+
 
         constexpr [[nodiscard]] T* as_array();
     };
 
-    template <typename T>
-    constexpr vector2<T>::vector2(T x, T y) noexcept
-        : x{ x }, y{ y }
-    {
-
-    }
-
-    template <typename T>
+    template <number T>
     constexpr [[nodiscard]] T* vector2<T>::as_array()
     {
         return &x;
     }
 
-    template <typename T>
-    constexpr vector2<T>& vector2<T>::operator= (const vector2<T>& other) noexcept
-    {
-        x = other.x;
-        y = other.y;
-        return *this;
-    }
-    template <typename T>
-    constexpr bool vector2<T>::operator==(const vector2<T>& other) const noexcept
+    template <number T>
+    constexpr bool vector2<T>::operator==(const value_type& other) const noexcept
     {
         return x == other.x && y == other.y;
     }
 
-    template <typename T>
-    constexpr bool vector2<T>::operator!=(const vector2<T>& other) const noexcept
+    template <number T>
+    constexpr bool vector2<T>::operator!=(const value_type& other) const noexcept
     {
         return !(*this == other);
+    }
+
+    template <number T>
+    constexpr vector2<T> vector2<T>::operator+(const value_type& other) const noexcept
+    {
+        return {x + other.x, y + other.y};
+    }
+
+    template <number T>
+    constexpr vector2<T> vector2<T>::operator-(const value_type& other) const noexcept
+    {
+        return { x - other.x, y - other.y };
     }
 
 }
